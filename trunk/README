@@ -28,6 +28,9 @@ provided prior to the scripts to be run:
 
 groovyt [OPTIONS] scripts...
 
+By default Test'N'Groove auto-import TestNG annotations and the org.testng.Assert class so you don't need
+to worry about these.
+
 For detailed documentation please consult TestNG site: http://testng.org
 
 
