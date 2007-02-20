@@ -40,9 +40,7 @@ We also include an Ant task. Here is an example:
 
 		<groovyt haltonfailure="true">
 			<scriptfileset dir="DIR"  includes="*.groovy" />
-			<classpath>
-				<!-- classpath -->
-			</classpath>
+			<classpath ... />
 		</groovyt>
 	</target>
 	
