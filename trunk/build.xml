@@ -129,7 +129,7 @@
 		<copy todir="${gcs.dir}" >
 			<fileset dir="${basedir}">
 				<include name="lib/*"/>
-				<include name="src/*"/>
+				<include name="src/**/*"/>
 				<include name=".*" />
 				<include name="build.*" />
 				<include name="README" />
