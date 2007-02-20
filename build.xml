@@ -1,0 +1,157 @@
+<project name="groovyng" default="dist" basedir=".">
+  <property file="local.build.properties" />
+	<property file="build.properties" />
+  
+	<property name="build.dir" value="${basedir}/build/classes" />
+	<property name="dist.dir" value="${basedir}/build/dist" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="src.java.dir" value="${basedir}/src/main" />
+	<property name="src.bin.dir" value="${basedir}/src/bin" />
+
+  <property name="optimize" value="false" />
+  <property name="build.compiler" value="javac1.5" />
+
+  <target name="compile"
+          depends="-prepare"
+          description="Compiles sources">
+    <path id="compile.cp">
+      <fileset dir="${lib.dir}" includes="*.jar" />
+    	<pathelement location="${groovy.jar}"/>
+    	<pathelement location="${ant.home}/lib/ant.jar" />
+    </path>
+
+    <javac classpathref="compile.cp"
+           verbose="false"
+           target="1.5"
+           debug="true"
+           optimize="${optimize}"
+           destdir="${build.dir}">
+      <src path="${src.java.dir}" />
+    </javac>
+  	<copy todir="${build.dir}">
+  		<fileset dir="${src.java.dir}" excludes="**/*.java" />
+  	</copy>
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Distribution                                                         -->
+  <!-- ==================================================================== -->
+
+  <target name="dist" depends="compile,jar,-copy-resources">
+    <zip zipfile="${dist.dir}/groovyng-${dist.version}.zip">
+      <zipfileset file="${basedir}/README" />
+    	<zipfileset dir="${basedir}/tmp" prefix="bin" />
+    	<zipfileset file="${dist.dir}/groovyng-${dist.version}.jar" prefix="lib" />
+    	<zipfileset file="${lib.dir}/testng.jar" prefix="lib" />
+    </zip>
+  	<delete failonerror="false" dir="${basedir}/tmp" />
+  </target>
+
+  <target name="jar">
+    <jar destfile="${dist.dir}/groovyng-${dist.version}.jar" update="false">
+      <manifest>
+        <attribute name="Version" value="${dist.version}" />
+      	<attribute name="Author" value="Alexandru Popescu" />
+      </manifest>
+      <fileset dir="${build.dir}" />
+    </jar>
+  </target>
+  
+  <target name="dist-notestng">
+    <zip zipfile="${dist.dir}/groovyng-notestng-${dist.version}.zip">
+      <zipfileset dir="${basedir}" includesfile="README" />
+    	<zipfileset dir="${basedir}/tmp" prefix="bin" />
+    	<zipfileset file="${dist.dir}/groovyng-${dist.version}.jar" prefix="lib" />
+    </zip>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- UTILITIES                                                              -->
+  <!-- ====================================================================== -->
+  <target name="-prepare"
+          description="Performs all preparations required to build.">
+    <tstamp />
+    <mkdir dir="${build.dir}" />
+  	<mkdir dir="${dist.dir}" />
+  </target>
+
+  <target name="-validate" description="Validates the build environment.">
+    <!-- java greater than 1.5 required to build -->
+    <condition property="requiredJavaVersion">
+    	<or>
+   			<equals arg1="${ant.java.version}" arg2="1.5" />
+    		<equals arg1="${ant.java.version}" arg2="1.6" />
+    	</or>
+    </condition>
+    <fail unless="requiredJavaVersion"
+          message="Java min version 1.5 required." />
+  </target>
+
+  <target name="-copy-resources" description="Copies resources.">
+  	<mkdir dir="${basedir}/tmp" />
+    <copy todir="${basedir}/tmp">
+      <fileset dir="${src.bin.dir}" includes="*" />
+    </copy>
+  	<chmod perm="755">
+  		<fileset dir="${basedir}/tmp" includes="*" />
+  	</chmod>
+  </target>
+
+	<target name="clean">
+    <delete failonerror="false">
+      <fileset dir="${build.dir}" includes="**/*" />
+    </delete>
+  </target>
+	
+  <!-- ====================================================================== -->
+  <!-- TEST ANT TASK                                                          -->
+  <!-- ====================================================================== -->
+	<target name="test:ant" depends="compile">
+		<taskdef resource="testngroovetasks">
+			<classpath>
+				<pathelement location="${build.dir}"/>
+				<fileset dir="${lib.dir}" includes="*.jar" />
+			</classpath>
+		</taskdef>
+		<groovyt haltonfailure="true">
+			<scriptfileset dir="d:/workspace/java/cvsprojects/svn/groovywork/testng"  includes="*.groovy" />
+			<classpath>
+				<pathelement location="${groovy.jar}" />
+			</classpath>
+		</groovyt>
+	</target>
+	
+  <!-- ====================================================================== -->
+  <!-- REMOTING			                                                          -->
+  <!-- ====================================================================== -->
+	<target name="synch">
+		<property name="gcs.dir" value="D:/workspace/java/cvsprojects/svn/testngroove" />
+		<copy todir="${gcs.dir}" >
+			<fileset dir="${basedir}">
+				<include name="lib/*"/>
+				<include name="src/*"/>
+				<include name=".*" />
+				<include name="build.*" />
+				<include name="README" />
+			</fileset>
+		</copy>
+		<input message="Google Code SVN pwd:" addproperty="gcsvn.pwd" />
+		<input message="Commit message     :" addproperty="commit.msg" defaultvalue="synchronization" />
+		<!--
+		<exec dir="${gcs.dir}" executable="C:/programs/versioning/svn_1.4.2/bin/svn.exe" logerror="true">
+			<arg value="add" />
+			<arg value="." />
+		</exec>
+				-->
+		<exec dir="${gcs.dir}" executable="C:/programs/versioning/svn_1.4.2/bin/svn.exe" logerror="true">
+			<arg value="commit" />
+			<arg value="-m" />
+			<arg value="${commit.msg}" />
+			<arg value="--username"/>
+			<arg value="the.mindstorm" />
+			<arg value="--password" />
+			<arg value="${gcsvn.pwd}" />
+			<arg value="." />
+		</exec>
+	</target>
+</project>
