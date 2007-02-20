@@ -1,0 +1,11 @@
+#!/bin/sh
+
+##############################################################################
+##                                                                          ##
+##  Test'N'Groove JVM Bootstrap for UN*X                                    ##
+##                                                                          ##
+##############################################################################
+DIRNAME=`dirname "$0"`
+. "$DIRNAME/startGroovy"
+
+startGroovy org.codehaus.groovy.testng.GroovyTestNG "$@"
