@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Test'N'Groove readme
 
 Test'N'Groove
 
@@ -39,7 +39,7 @@ We also include an Ant task. Here is an example:
 		<taskdef resource="testngroovetasks" classpathref="CPREF" />
 
 		<groovyt haltonfailure="true">
-			<scriptfileset dir="d:/workspace/java/cvsprojects/svn/groovywork/testng"  includes="*.groovy" />
+			<scriptfileset dir="DIR"  includes="*.groovy" />
 			<classpath>
 				<!-- classpath -->
 			</classpath>
